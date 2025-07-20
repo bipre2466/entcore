@@ -50,28 +50,28 @@ clean () {
 
 init () {
   echo "[init] Get branch name from jenkins env..."
-  BRANCH_NAME=`echo $GIT_BRANCH | sed -e "s|origin/||g"`
+  BRANCH_NAME=`echo $GIT_BRANCH | gsed -e "s|origin/||g"`
   if [ "$BRANCH_NAME" = "" ]; then
     echo "[init] Get branch name from git..."
-    BRANCH_NAME=`git branch | sed -n -e "s/^\* \(.*\)/\1/p"`
+    BRANCH_NAME=`git branch | gsed -n -e "s/^\* \(.*\)/\1/p"`
   fi
 
   echo "[init] Generate package.json from package.json.template..."
   NPM_VERSION_SUFFIX=`date +"%Y%m%d%H%M"`
   cp package.json.template package.json
-  sed -i "s/%branch%/${BRANCH_NAME}/" package.json
-  sed -i "s/%generateVersion%/${NPM_VERSION_SUFFIX}/" package.json
+  gsed -i "s/%branch%/${BRANCH_NAME}/" package.json
+  gsed -i "s/%generateVersion%/${NPM_VERSION_SUFFIX}/" package.json
 
   if [ "$BRANCH_NAME" = "dev" ] ; then 
-    sed -i "s/%packageVersion%/develop/" package.json
+    gsed -i "s/%packageVersion%/develop/" package.json
   else 
-    sed -i "s/%packageVersion%/${BRANCH_NAME}/" package.json
+    gsed -i "s/%packageVersion%/${BRANCH_NAME}/" package.json
   fi
 
   if [ "$NO_DOCKER" = "true" ] ; then
     pnpm install
   else
-    docker compose run -e NPM_TOKEN -e TIPTAP_PRO_TOKEN --rm $USER_OPTION node sh -c "pnpm install"
+    docker-compose run -e NPM_TOKEN -e TIPTAP_PRO_TOKEN --rm $USER_OPTION node sh -c "pnpm install"
   fi
 
 }
@@ -80,7 +80,7 @@ build () {
   if [ "$NO_DOCKER" = "true" ] ; then
     pnpm build
   else
-    docker compose run -e NPM_TOKEN -e TIPTAP_PRO_TOKEN --rm $USER_OPTION node sh -c "pnpm build"
+    docker-compose run -e NPM_TOKEN -e TIPTAP_PRO_TOKEN --rm $USER_OPTION node sh -c "pnpm build"
   fi
   status=$?
   if [ $status != 0 ];
