@@ -105,8 +105,12 @@ export default ({ mode }: { mode: string }) => {
       assetsDir: 'public',
       chunkSizeWarningLimit: 4000,
       rollupOptions: {
+        external: ['@tiptap-pro/extension-mathematics'],
         output: {
           inlineDynamicImports: true,
+          globals: {
+            '@tiptap-pro/extension-mathematics': 'TiptapMathematics'
+          }
         },
       },
     },
